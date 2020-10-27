@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 
 import com.example.java.submission_jetpack.data.source.SubmissionRepository;
+import com.example.java.submission_jetpack.data.source.local.entitiy.MovieTvEntity;
 import com.example.java.submission_jetpack.data.source.remote.response.movie.DetailMovieResponse;
 import com.example.java.submission_jetpack.data.source.remote.response.tv.DetailTvShowResponse;
 import com.example.java.submission_jetpack.utils.FakeDataDummy;
@@ -19,6 +20,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class DetailViewModelTest {
     private DetailViewModel detailViewModel;
@@ -26,6 +28,9 @@ public class DetailViewModelTest {
     private DetailTvShowResponse tvDetailDummy = FakeDataDummy.getDummyDetailTvTest();
     private String movieId = String.valueOf(movieDetailDummy.getId());
     private String tvId = String.valueOf(tvDetailDummy.getId());
+
+    private MovieTvEntity dummyShow = FakeDataDummy.getDummyMovie().get(0);
+    private String showId = FakeDataDummy.getDummyMovie().get(0).getId();
 
     @Rule
     public InstantTaskExecutorRule instantTaskExecutorRule = new InstantTaskExecutorRule();
@@ -71,6 +76,22 @@ public class DetailViewModelTest {
         assertEquals(detailViewModel.detailTvResponse, detailViewModel.getDetailTvShow());
 
         verify(observer).onChanged(tvDetailDummy);
+    }
+
+    @Test
+    public void getFavoriteDetail() {
+        MutableLiveData<MovieTvEntity> detailDummy = new MutableLiveData<>();
+        detailDummy.setValue(dummyShow);
+
+        detailViewModel.setSelectedDetailId(showId);
+
+        when(submissionRepository.getShowById(showId)).thenReturn(detailDummy);
+
+        Observer<MovieTvEntity> observer = mock(Observer.class);
+
+        detailViewModel.getFavoriteDetail().observeForever(observer);
+
+        verify(observer).onChanged(dummyShow);
     }
 
 }

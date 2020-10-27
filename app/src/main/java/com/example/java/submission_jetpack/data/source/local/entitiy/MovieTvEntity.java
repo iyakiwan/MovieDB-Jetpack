@@ -1,21 +1,61 @@
 package com.example.java.submission_jetpack.data.source.local.entitiy;
 
+import androidx.annotation.NonNull;
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
+@Entity(tableName = "show")
 public class MovieTvEntity {
-    private String id, title, poster, rating, release, language, other, runtime, genre, overview;
+    @PrimaryKey
+    @NonNull
+    @ColumnInfo(name = "id")
+    private String id;
+
+    @ColumnInfo(name = "title")
+    private String title;
+
+    @ColumnInfo(name = "poster")
+    private String poster;
+
+    @ColumnInfo(name = "rating")
+    private String rating;
+
+    @ColumnInfo(name = "release")
+    private String release;
+
+    @ColumnInfo(name = "language")
+    private String language;
+
+    @ColumnInfo(name = "other")
+    private String other;
+
+    @ColumnInfo(name = "runtime")
+    private String runtime;
+
+    @ColumnInfo(name = "genre")
+    private String genre;
+
+    @ColumnInfo(name = "overview")
+    private String overview;
+
+    @ColumnInfo(name = "show")
+    private String show;
 
     public MovieTvEntity() {
     }
 
-    public MovieTvEntity(String id, String title, String poster, String rating, String release, String overview) {
+    public MovieTvEntity(String id, String title, String poster, String rating, String release, String overview, String show) {
         this.id = id;
         this.title = title;
         this.poster = poster;
         this.rating = rating;
         this.release = release;
         this.overview = overview;
+        this.show = show;
     }
 
-    public MovieTvEntity(String id, String title, String poster, String rating, String release, String language, String other, String runtime, String genre, String overview) {
+    public MovieTvEntity(String id, String title, String poster, String rating, String release, String language, String other, String runtime, String genre, String overview, String show) {
         this.id = id;
         this.title = title;
         this.poster = poster;
@@ -26,6 +66,7 @@ public class MovieTvEntity {
         this.runtime = runtime;
         this.genre = genre;
         this.overview = overview;
+        this.show = show;
     }
 
     public String getId() {
@@ -106,5 +147,13 @@ public class MovieTvEntity {
 
     public void setOverview(String overview) {
         this.overview = overview;
+    }
+
+    public String getShow() {
+        return show;
+    }
+
+    public void setShow(String show) {
+        this.show = show;
     }
 }

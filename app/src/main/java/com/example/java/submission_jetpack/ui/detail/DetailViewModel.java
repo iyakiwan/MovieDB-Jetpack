@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.java.submission_jetpack.data.source.SubmissionRepository;
+import com.example.java.submission_jetpack.data.source.local.entitiy.MovieTvEntity;
 import com.example.java.submission_jetpack.data.source.remote.response.movie.DetailMovieResponse;
 import com.example.java.submission_jetpack.data.source.remote.response.tv.DetailTvShowResponse;
 
@@ -35,5 +36,17 @@ public class DetailViewModel extends ViewModel {
             submissionRepository.getDetailTvShow(detailTvResponse, detailId);
         }
         return detailTvResponse;
+    }
+
+    public void insertShow(MovieTvEntity show) {
+        submissionRepository.insertShow(show);
+    }
+
+    public void deleteShow(MovieTvEntity show) {
+        submissionRepository.deleteShow(show);
+    }
+
+    public LiveData<MovieTvEntity> getFavoriteDetail() {
+        return submissionRepository.getShowById(detailId);
     }
 }

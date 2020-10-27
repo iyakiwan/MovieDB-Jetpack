@@ -2,12 +2,15 @@ package com.example.java.submission_jetpack.ui.detail;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
@@ -15,13 +18,13 @@ import com.bumptech.glide.request.RequestOptions;
 import com.example.java.submission_jetpack.R;
 import com.example.java.submission_jetpack.data.source.local.entitiy.MovieTvEntity;
 import com.example.java.submission_jetpack.data.source.remote.response.GenreResponse;
-import com.example.java.submission_jetpack.utils.EspressoIdlingResource;
 import com.example.java.submission_jetpack.viewmodel.ViewModelFactory;
 
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Objects;
 
 public class DetailActivity extends AppCompatActivity {
 
@@ -38,6 +41,13 @@ public class DetailActivity extends AppCompatActivity {
     private TextView tvLanguage;
     private TextView tvRuntime;
     private ImageView imgPoster;
+
+    private DetailViewModel detailViewModel;
+    private Menu menu;
+    private MovieTvEntity movieTvEntity;
+
+    private String show = "", id = "";
+    private boolean favorite = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,13 +70,13 @@ public class DetailActivity extends AppCompatActivity {
         imgPoster = findViewById(R.id.img_detail_poster);
         progressBar = findViewById(R.id.progress_bar);
 
-        ViewModelFactory factory = ViewModelFactory.getInstance();
-        DetailViewModel detailViewModel = new ViewModelProvider(this, factory).get(DetailViewModel.class);
+        ViewModelFactory factory = ViewModelFactory.getInstance(this);
+        detailViewModel = new ViewModelProvider(this, factory).get(DetailViewModel.class);
 
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
-            String id = extras.getString(EXTRA_ID);
-            String show = getIntent().getStringExtra(EXTRA_SHOW);
+            id = extras.getString(EXTRA_ID);
+            show = getIntent().getStringExtra(EXTRA_SHOW);
             if (id != null && show != null) {
                 detailViewModel.setSelectedDetailId(id);
 
@@ -95,11 +105,13 @@ public class DetailActivity extends AppCompatActivity {
                             genres.append(", ").append(genreResponse.getName());
                         }
                         detailMovie.setGenre(genres.toString());
+                        detailMovie.setShow(show);
 
+                        movieTvEntity = detailMovie;
                         setDetail(detailMovie);
                         progressBar.setVisibility(View.GONE);
                     });
-                } else {
+                } else if (show.equals("tv")) {
                     tvJdlDirNet.setText(getResources().getString(R.string.production));
 
                     detailViewModel.getDetailTvShow().observe(this, response -> {
@@ -148,9 +160,22 @@ public class DetailActivity extends AppCompatActivity {
                             genres.append(", ").append(genreResponse.getName());
                         }
                         detailTvShow.setGenre(genres.toString());
+                        detailTvShow.setShow(show);
 
+                        movieTvEntity = detailTvShow;
                         setDetail(detailTvShow);
                         progressBar.setVisibility(View.GONE);
+                    });
+                } else {
+                    if (show.equals("favorite tv")) {
+                        tvJdlDirNet.setText(getResources().getString(R.string.production));
+                    }
+                    detailViewModel.getFavoriteDetail().observe(this, response -> {
+                        if (response != null){
+                            movieTvEntity = response;
+                            setDetail(response);
+                            progressBar.setVisibility(View.GONE);
+                        }
                     });
                 }
             }
@@ -164,7 +189,7 @@ public class DetailActivity extends AppCompatActivity {
         String dateRelease = "";
         try {
             @SuppressLint("SimpleDateFormat") Date date = new SimpleDateFormat("yyyy-MM-dd").parse(movieTvEntity.getRelease());
-            dateRelease = DateFormat.getDateInstance(DateFormat.MEDIUM).format(date);
+            dateRelease = DateFormat.getDateInstance(DateFormat.MEDIUM).format(Objects.requireNonNull(date));
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -178,5 +203,49 @@ public class DetailActivity extends AppCompatActivity {
                 .load(urlImage + movieTvEntity.getPoster())
                 .apply(new RequestOptions())
                 .into(imgPoster);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_detail, menu);
+        this.menu = menu;
+        detailViewModel.getFavoriteDetail().observe(this, response -> {
+            if (response != null){
+                if (response.getId().equals(id)){
+                    favorite = true;
+                    setBookmarkState(true);
+                }
+            }
+        });
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_favorite) {
+            if (favorite) {
+                favorite = false;
+                detailViewModel.deleteShow(movieTvEntity);
+            } else {
+                favorite = true;
+                detailViewModel.insertShow(movieTvEntity);
+            }
+            setBookmarkState(favorite);
+            return true;
+        } else if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void setBookmarkState(boolean state) {
+        if (menu == null) return;
+        MenuItem menuItem = menu.findItem(R.id.action_favorite);
+        if (state) {
+            menuItem.setIcon(ContextCompat.getDrawable(this, R.drawable.ic_favorite_full_white));
+        } else {
+            menuItem.setIcon(ContextCompat.getDrawable(this, R.drawable.ic_favorite_white));
+        }
     }
 }

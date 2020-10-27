@@ -1,4 +1,4 @@
-package com.example.java.submission_jetpack.ui;
+package com.example.java.submission_jetpack.ui.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -23,6 +23,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 public class ShowAdapter extends RecyclerView.Adapter<ShowAdapter.ShowAdapterHolder> {
     private ArrayList<MovieTvEntity> dataShow = new ArrayList<>();
@@ -82,7 +83,7 @@ public class ShowAdapter extends RecyclerView.Adapter<ShowAdapter.ShowAdapterHol
             String dateRelease = "";
             try {
                 @SuppressLint("SimpleDateFormat") Date date = new SimpleDateFormat("yyyy-MM-dd").parse(showItems.getRelease());
-                dateRelease = DateFormat.getDateInstance(DateFormat.MEDIUM).format(date);
+                dateRelease = DateFormat.getDateInstance(DateFormat.MEDIUM).format(Objects.requireNonNull(date));
             } catch (ParseException e) {
                 e.printStackTrace();
             }

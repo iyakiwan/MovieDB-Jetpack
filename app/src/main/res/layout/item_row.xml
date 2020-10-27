@@ -51,7 +51,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
             android:contentDescription="@string/cth_dec_img"
-            android:src="@drawable/rating_star"
+            android:src="@drawable/star"
             app:layout_constraintStart_toEndOf="@+id/img_item_show"
             app:layout_constraintTop_toBottomOf="@+id/tv_item_name" />
 

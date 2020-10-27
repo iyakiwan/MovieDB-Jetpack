@@ -1,6 +1,8 @@
 package com.example.java.submission_jetpack.utils;
 
+import android.content.Context;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
@@ -27,6 +29,12 @@ public class ApiHelper {
 
     private ApiInterface service = ApiClient.getRetrofitInstance().create(ApiInterface.class);
 
+    private Context context;
+
+    public ApiHelper(Context context) {
+        this.context = context;
+    }
+
     public void getMovie(MutableLiveData<List<MovieResponse>> liveDataMovie) {
         EspressoIdlingResource.increment();
 
@@ -39,6 +47,7 @@ public class ApiHelper {
                     if (listMovieResponse != null && listMovieResponse.getResults() != null) {
                         liveDataMovie.postValue(listMovieResponse.getResults());
                     } else {
+                        Toast.makeText(context, "Empty Data Movie", Toast.LENGTH_SHORT).show();
                         Log.d("ApiCall", "Empty Data Movie");
                     }
                 }
@@ -48,6 +57,7 @@ public class ApiHelper {
             @Override
             public void onFailure(@NonNull Call<ListMovieResponse> call, @NonNull Throwable t) {
                 Log.d("ApiCall", "Failure Data Movie");
+                Toast.makeText(context, "Connection Failed", Toast.LENGTH_SHORT).show();
                 EspressoIdlingResource.decrement();
             }
         });

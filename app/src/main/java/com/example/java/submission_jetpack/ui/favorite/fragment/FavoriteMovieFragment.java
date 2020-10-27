@@ -1,4 +1,4 @@
-package com.example.java.submission_jetpack.ui.movie;
+package com.example.java.submission_jetpack.ui.favorite.fragment;
 
 
 import android.os.Bundle;
@@ -14,24 +14,20 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.java.submission_jetpack.R;
-import com.example.java.submission_jetpack.data.source.local.entitiy.MovieTvEntity;
-import com.example.java.submission_jetpack.data.source.remote.response.movie.MovieResponse;
-import com.example.java.submission_jetpack.ui.adapter.ShowAdapter;
+import com.example.java.submission_jetpack.ui.adapter.FavoriteAdapter;
+import com.example.java.submission_jetpack.ui.favorite.FavoriteViewModel;
 import com.example.java.submission_jetpack.viewmodel.ViewModelFactory;
 import com.stone.vega.library.VegaLayoutManager;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MovieFragment extends Fragment {
+public class FavoriteMovieFragment extends Fragment {
 
     private RecyclerView rvFragmentMoviePopular;
     private ProgressBar progressBar;
 
-    public MovieFragment() {
+    public FavoriteMovieFragment() {
     }
 
     @Override
@@ -52,27 +48,14 @@ public class MovieFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         if (getActivity() != null) {
             ViewModelFactory factory = ViewModelFactory.getInstance(getContext());
-            MovieViewModel movieViewModel = new ViewModelProvider(this, factory).get(MovieViewModel.class);
+            FavoriteViewModel favoriteViewModel = new ViewModelProvider(this, factory).get(FavoriteViewModel.class);
 
-            ShowAdapter showAdapter = new ShowAdapter("movie");
+            FavoriteAdapter favoriteAdapter = new FavoriteAdapter("favorite movie");
             progressBar.setVisibility(View.VISIBLE);
-            movieViewModel.getListMovie().observe(getViewLifecycleOwner(), movieResponses -> {
-                        if (movieResponses != null){
-                            List<MovieTvEntity> movieTvEntityArrayList = new ArrayList<>();
-                            for (MovieResponse response : movieResponses) {
-                                MovieTvEntity movie = new MovieTvEntity(
-                                        String.valueOf(response.getId()),
-                                        response.getTitle(),
-                                        response.getPosterPath(),
-                                        String.valueOf(response.getVoteAverage()),
-                                        response.getReleaseDate(),
-                                        response.getOverview(),
-                                        "movie");
-
-                                movieTvEntityArrayList.add(movie);
-                            }
-                            showAdapter.setData(movieTvEntityArrayList);
-                            showAdapter.notifyDataSetChanged();
+            favoriteViewModel.getListFavMovie().observe(getViewLifecycleOwner(), responses -> {
+                        if (responses != null){
+                            favoriteAdapter.submitList(responses);
+                            favoriteAdapter.notifyDataSetChanged();
                             progressBar.setVisibility(View.GONE);
                         }
                     }
@@ -80,7 +63,7 @@ public class MovieFragment extends Fragment {
 
             rvFragmentMoviePopular.setLayoutManager(new VegaLayoutManager());
             rvFragmentMoviePopular.setHasFixedSize(true);
-            rvFragmentMoviePopular.setAdapter(showAdapter);
+            rvFragmentMoviePopular.setAdapter(favoriteAdapter);
         }
     }
 }

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/navigation_fav_movie">
+
+    <fragment
+        android:id="@+id/navigation_fav_movie"
+        android:name="com.example.java.submission_jetpack.ui.favorite.fragment.FavoriteMovieFragment"
+        android:label="@string/tab_text_1"
+        tools:layout="@layout/fragment_movie" />
+
+    <fragment
+        android:id="@+id/navigation_fav_tv"
+        android:name="com.example.java.submission_jetpack.ui.favorite.fragment.FavoriteTvFragment"
+        android:label="@string/tab_text_2"
+        tools:layout="@layout/fragment_tv" />
+
+</navigation>
